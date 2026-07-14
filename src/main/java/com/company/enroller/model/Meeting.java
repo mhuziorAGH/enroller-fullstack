@@ -33,6 +33,9 @@ public class Meeting {
     @Column
     private String date;
 
+    @Column(name = "created_by")
+    private String createdBy;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "meeting_participant", joinColumns = {@JoinColumn(name = "meeting_id")}, inverseJoinColumns = {
             @JoinColumn(name = "participant_login")})
@@ -54,6 +57,10 @@ public class Meeting {
         return date;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -68,6 +75,10 @@ public class Meeting {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public void addParticipant(Participant participant) {

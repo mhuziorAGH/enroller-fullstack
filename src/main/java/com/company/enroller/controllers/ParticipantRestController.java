@@ -1,7 +1,9 @@
 package com.company.enroller.controllers;
 
+import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.ParticipantService;
+import com.company.enroller.persistence.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import java.util.Collection;
 
 @RestController
@@ -21,6 +24,9 @@ public class ParticipantRestController {
 
 	@Autowired
 	ParticipantService participantService;
+
+	@Autowired
+	MeetingService meetingService;
 
 	@GetMapping(value = "")
 	public ResponseEntity<?> getParticipants(@RequestParam(value = "sortBy", defaultValue = "") String sortMode,

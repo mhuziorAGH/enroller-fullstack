@@ -20,7 +20,7 @@ export default function MeetingsPage({username}) {
     async function handleNewMeeting(meeting) {
         const response = await fetch('/api/meetings', {
             method: 'POST',
-            body: JSON.stringify(meeting),
+            body: JSON.stringify({...meeting, createdBy: username}),
             headers: { 'Content-Type': 'application/json' }
         });
         if (response.ok) {
@@ -32,12 +32,34 @@ export default function MeetingsPage({username}) {
     }
 
     async function handleDeleteMeeting(meeting) {
-        const response = await fetch(`/api/meetings/${meeting.id}`, {
+        const response = await fetch(`/api/meetings/${meeting.id}?requesterLogin=${username}`, {
             method: 'DELETE',
         });
         if (response.ok) {
             const nextMeetings = meetings.filter(m => m !== meeting);
             setMeetings(nextMeetings);
+        }
+    }
+
+    async function handleRegister(meeting) {
+        const response = await fetch(`/api/meetings/${meeting.id}/participants`, {
+            method: 'POST',
+            body: JSON.stringify({login: username}),
+            headers: {'Content-Type': 'application/json'}
+        });
+        if (response.ok) {
+            const updatedMeeting = await response.json();
+            setMeetings(meetings.map(m => m.id === meeting.id ? updatedMeeting : m));
+        }
+    }
+
+    async function handleUnregister(meeting) {
+        const response = await fetch(`/api/meetings/${meeting.id}/participants/${username}`, {
+            method: 'DELETE',
+        });
+        if (response.ok) {
+            const updatedMeeting = await response.json();
+            setMeetings(meetings.map(m => m.id === meeting.id ? updatedMeeting : m));
         }
     }
 
@@ -51,7 +73,9 @@ export default function MeetingsPage({username}) {
             }
             {meetings.length > 0 &&
                 <MeetingsList meetings={meetings} username={username}
-                              onDelete={handleDeleteMeeting}/>}
+                              onDelete={handleDeleteMeeting}
+                              onRegister={handleRegister}
+                              onUnregister={handleUnregister}/>}
         </div>
     )
 }

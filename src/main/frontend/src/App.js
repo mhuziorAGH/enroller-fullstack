@@ -7,10 +7,29 @@ import UserPanel from "./UserPanel";
 function App() {
     const [loggedIn, setLoggedIn] = useState('');
 
-    function login(email) {
-        if (email) {
-            setLoggedIn(email);
+    async function login(email) {
+        if (!email) {
+            return;
         }
+
+        // sprawdź, czy taki uczestnik już istnieje
+        const checkResponse = await fetch(`/api/participants/${email}`);
+
+        if (checkResponse.status === 404) {
+            // nie istnieje - zarejestruj go automatycznie
+            const createResponse = await fetch('/api/participants', {
+                method: 'POST',
+                body: JSON.stringify({login: email, password: ''}),
+                headers: {'Content-Type': 'application/json'}
+            });
+
+            if (!createResponse.ok) {
+                console.error('Nie udało się zarejestrować uczestnika');
+                return;
+            }
+        }
+
+        setLoggedIn(email);
     }
 
     function logout() {
